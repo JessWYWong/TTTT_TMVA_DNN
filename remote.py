@@ -46,6 +46,7 @@ for var_data in config.varList["DNN"]:
     print( "    {:<4} {}".format( str(num_vars) + ".", var_data[0] ) )
     loader.AddVariable( var_data[0], var_data[1], "", "F")
 
+print(args.year, config.step2DirLPC, inputDir)
 # Add signal and background trees to loader
 signals = []
 signal_trees = []
@@ -66,10 +67,12 @@ for bkg in config.bkg_training[ args.year ]:
 
 # Set weights and cuts
 base_cut = config.base_cut
-base_cut += " && ( NJetsCSV_MultiLepCalc >= {} )".format( args.nbjets ) 
-base_cut += " && ( NJets_JetSubCalc >= {} )".format( args.njets ) 
+base_cut += " && ( NJetsBTagwithSF_MultiLepCalc >= {} )".format( args.nbjets )
+base_cut += " && ( NJets_MultiLepCalc == {} )".format( args.njets )
+#base_cut += " && ( NJetsCSV_MultiLepCalc >= {} )".format( args.nbjets ) 
+#base_cut += " && ( NJets_JetSubCalc >= {} )".format( args.njets ) 
 
-loader.SetSignalWeightExpression( config.weightStr )
+loader.SetSignalWeightExpression( config.sigweightStr )
 loader.SetBackgroundWeightExpression( config.weightStr )
 
 cut = TCut( base_cut )
@@ -86,9 +89,9 @@ model = Sequential()
 model.add( Dense( num_vars,
                 input_dim = num_vars,
                 activation = "relu") )
-for _ in range( 3 ):
+for _ in range( 1 ): #3 ):
     model.add( BatchNormalization() )
-    model.add( Dropout( 0.3 ) )
+    #model.add( Dropout( 0.3 ) )
     model.add( Dense( 50, activation = "relu" ) )
 model.add( Dense( 2, activation="sigmoid" ) )
 
@@ -105,7 +108,7 @@ factory.BookMethod(
     loader,
     TMVA.Types.kPyKeras,
     "PyKeras",
-    "!H:!V:VarTransform=G:FilenameModel=" + model_name + ":NumEpochs=30:BatchSize=512:SaveBestOnly=true"
+    "!H:!V:VarTransform=G:FilenameModel=" + model_name + ":NumEpochs=30:BatchSize=512:SaveBestOnly=false"
 )
 
 (TMVA.gConfig().GetIONames()).fWeightFileDir = "weights"

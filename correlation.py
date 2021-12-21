@@ -4,6 +4,7 @@ import numpy as np
 import os
 from jobtracker import Seed
 import config
+import weights
 
 # Initialize TMVA library
 TMVA.Tools.Instance()
@@ -12,9 +13,9 @@ TMVA.PyMethodBase.PyInitialize()
 def get_correlation_matrix(year, variables, njets, nbjets):
   # Returns the correlation matrix of the given variables
   # Get signal and background paths
-  signal_path = os.path.join(config.step2DirLPC[ str(year) ] + "/nominal/",
+  signal_path = os.path.join(config.step2DirEOS[ str(year) ] + "/nominal/", #step2DirLPC
                              config.sig_training[ str(year) ][0] )
-  bkgrnd_path = os.path.join(config.step2DirLPC[ str(year) ] + "/nominal/",
+  bkgrnd_path = os.path.join(config.step2DirEOS[ str(year) ] + "/nominal/", #step2DirLPC
                              config.bkg_training[ str(year) ][0] )
 
   # Create TMVA object
@@ -29,6 +30,7 @@ def get_correlation_matrix(year, variables, njets, nbjets):
       print( "[WARN] The variable {} was not found. Omitting.".format(var) )
 
   # Open ROOT files
+  print(list(config.all_samples[ str(year) ].keys())[list(config.all_samples[ str(year) ].values()).index(signal_path.split("/")[-1])], list(config.all_samples[ str(year) ].keys())[list(config.all_samples[ str(year) ].values()).index(bkgrnd_path.split("/")[-1])])
   signal_f = TFile.Open( signal_path )
   signal = signal_f.Get( "ljmet" )
   bkgrnd_f = TFile.Open( bkgrnd_path )
@@ -42,13 +44,15 @@ def get_correlation_matrix(year, variables, njets, nbjets):
 
   # Set weights
   weight_string = config.weightStr
-  loader.SetSignalWeightExpression( weight_string )
-  loader.SetBackgroundWeightExpression( weight_string )
+  loader.SetSignalWeightExpression( weight_string.replace(" * (MCWeight_MultiLepCalc)/abs(MCWeight_MultiLepCalc) "," * (MCWeight_MultiLepCalc) * pdfWeights4LHC[0] ")+" * {}".format(weights.weight[list(config.all_samples[ str(year) ].keys())[list(config.all_samples[ str(year) ].values()).index(signal_path.split("/")[-1])]]) )
+  loader.SetBackgroundWeightExpression( weight_string+" * {}".format(weights.weight[list(config.all_samples[ str(year) ].keys())[list(config.all_samples[ str(year) ].values()).index(bkgrnd_path.split("/")[-1])]]) )
 
   # Set cuts
   base_cut = config.base_cut
-  base_cut += " && ( NJetsCSV_MultiLepCalc >= {} )".format( nbjets ) 
-  base_cut += " && ( NJets_JetSubCalc >= {} )".format( njets )
+  base_cut += " && ( NJetsBTagwithSF_MultiLepCalc >= {} )".format( nbjets ) 
+  base_cut += " && ( NJets_MultiLepCalc >= {} )".format( njets )
+  #base_cut += " && ( NJetsCSV_MultiLepCalc >= {} )".format( nbjets ) 
+  #base_cut += " && ( NJets_JetSubCalc >= {} )".format( njets )
   cut_string = TCut( base_cut )
   loader.PrepareTrainingAndTestTree(
     cut_string, cut_string,

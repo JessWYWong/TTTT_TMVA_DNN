@@ -12,11 +12,11 @@ echo ">> Setting Up TTTT Job"
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 
 # Copy and Unpack Resources
-xrdcp -s root://cmseos.fnal.gov//store/user/$eos_username/CMSSW946_4T.tgz .
-tar -xf CMSSW946_4T.tgz
-rm CMSSW946_4T.tgz
+xrdcp -s root://cmseos.fnal.gov//store/user/$eos_username/CMSSW946_TT.tgz .
+tar -xf CMSSW946_TT.tgz
+rm CMSSW946_TT.tgz
 
-cd ./CMSSW_9_4_6_patch1/src/TTTT_TMVA_DNN
+cd DNN/CMSSW_9_4_6_patch1/src/TTTT_TMVA_DNN
 
 export SCRAM_ARCH=slc7_amd64_gcc630
 eval `scramv1 runtime -sh`

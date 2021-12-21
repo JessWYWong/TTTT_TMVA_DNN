@@ -6,14 +6,14 @@ outputDir=${3}
 eosUserName=${4}
 tag=${5}
 
-xrdcp -s root://cmseos.fnal.gov//store/user/$eosUserName/CMSSW946_4T.tgz .
-tar -xf CMSSW946_4T.tgz
-rm CMSSW946_4T.tgz
+xrdcp -s root://cmseos.fnal.gov//store/user/$eosUserName/CMSSW946_TT.tgz .
+tar -xf CMSSW946_TT.tgz
+rm CMSSW946_TT.tgz
 
 mv *.h5 CMSSW_9_4_6_patch1/src/TTTT_TMVA_DNN/
 mv *.json CMSSW_9_4_6_patch1/src/TTTT_TMVA_DNN/
 
-cd CMSSW_9_4_6_patch1/src/TTTT_TMVA_DNN
+cd DNN/CMSSW_9_4_6_patch1/src/TTTT_TMVA_DNN
 
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 source /cvmfs/sft.cern.ch/lcg/views/LCG_94/x86_64-centos7-gcc8-opt/setup.sh

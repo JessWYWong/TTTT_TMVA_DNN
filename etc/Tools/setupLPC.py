@@ -9,7 +9,7 @@ sys.path.insert(0, "../TTTT_TMVA_DNN")
 import varsList
 
 # set-up the working area
-lpcHomeDir = os.path.expanduser("~/nobackup/CMSSW_9_4_6_patch1/src/TTTT_TMVA_DNN/")
+lpcHomeDir = os.path.expanduser("~/nobackup/DNN/CMSSW_9_4_6_patch1/src/TTTT_TMVA_DNN/")
 brux_pwd = None
 
 # Run CERN
